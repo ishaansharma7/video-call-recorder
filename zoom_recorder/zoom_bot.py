@@ -9,12 +9,13 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
-from zoom_recorder.bot_helper import login_details, name_modifier, mic_status, save_to_db, speaking_operations, find_process_id_by_name, start_stop_recording, fault_capture, toggle_recording
+from zoom_recorder.bot_helper import login_details, name_modifier, mic_status, save_to_db, speaking_operations, find_process_id_by_name, fault_capture, toggle_recording
 from time import time, ctime
 
 
 def master(meeting_link: str, password: str):
 
+    # paths
     main_path = os.getcwd()
     driver_path = os.path.join(main_path, 'chromedriver')
     dotenv_path = join(dirname(__file__), '.env')

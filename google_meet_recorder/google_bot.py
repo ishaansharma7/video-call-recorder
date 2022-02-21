@@ -16,6 +16,7 @@ import json
 
 def master(meeting_link: str):
 
+    # paths
     main_path = os.getcwd()
     driver_path = os.path.join(main_path, 'chromedriver')
     dotenv_path = join(dirname(__file__), '.env')
