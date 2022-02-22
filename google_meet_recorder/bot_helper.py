@@ -36,7 +36,8 @@ def fault_capture(msg: str, URL: str):
         'joining link': URL,
         'time': time.ctime()
     }
-    with open('recent_call_error.txt', 'w') as convert_file:
+    with open('recent_call_error.txt', 'a') as convert_file:
+        convert_file.write('\n\n\n')
         convert_file.write(json.dumps(error_dict, indent=4))
     cluster = os.environ.get('CLUSTER')
     client = MongoClient(cluster)
@@ -115,7 +116,8 @@ def save_to_db(duration_dict: dict, name_keeper_dict: dict, participant_id_name_
         'participants name': list(participant_id_name_dict.values()),
         'participants data': participants_data
         }
-    with open('recent_google_meet.txt', 'w') as convert_file:
+    with open('recent_google_meet.txt', 'a') as convert_file:
+        convert_file.write('\n\n\n')
         convert_file.write(json.dumps(call_summary, indent=4))
     cluster = os.environ.get('CLUSTER')
     client = MongoClient(cluster)
