@@ -125,7 +125,7 @@ def save_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: d
         'participants name': list(participants_dict.keys()),
         'participants data': participants_data
         }
-    with open('recent_call.txt', 'w') as convert_file:
+    with open('recent_zoom_call.txt', 'w') as convert_file:
         convert_file.write(json.dumps(call_summary, indent=4))
     cluster = os.environ.get('CLUSTER')
     client = MongoClient(cluster)

@@ -21,8 +21,10 @@ def master(meeting_link: str, password: str):
     dotenv_path = join(dirname(__file__), '.env')
     load_dotenv(dotenv_path)
 
-    retry_login = int(os.environ.get('RETRY'))     # number of retries in case of login failure
-    record = os.environ.get('RECORD') == '1'       # enable/disable recording feature
+    retry_login = int(os.environ.get('RETRY'))          # number of retries in case of login failure
+    record = os.environ.get('RECORD') == '1'            # enable/disable recording feature
+    wait_sec = int(os.environ.get('WAIT_SEC'))          # general waiting time for html components to load
+    admit_wait = int(os.environ.get('ADMIT_WAIT'))      # waiting time for admit
 
 
     # meeting link
@@ -55,9 +57,9 @@ def master(meeting_link: str, password: str):
 
         # login code
         try:
-            WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.XPATH, '//*[@id="inputname"]'))).send_keys('Zoom Bot')
-            WebDriverWait(driver, 60).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="joinBtn"]'))).click()
-            WebDriverWait(driver, 60).until(EC.element_to_be_clickable((By.ID, "inputpasscode"))).send_keys(password)
+            WebDriverWait(driver, wait_sec).until(EC.presence_of_element_located((By.XPATH, '//*[@id="inputname"]'))).send_keys('Zoom Bot')
+            WebDriverWait(driver, wait_sec).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="joinBtn"]'))).click()
+            WebDriverWait(driver, wait_sec).until(EC.element_to_be_clickable((By.ID, "inputpasscode"))).send_keys(password)
             driver.find_element(by=By.ID, value='joinBtn').click()
         except Exception:
             fault_capture('error ocurred while loging into zoom', URL)
@@ -68,7 +70,7 @@ def master(meeting_link: str, password: str):
 
     # after entering call within 200 seconds, enable footer and open participants list
     try:
-        hidden_bar = WebDriverWait(driver, 200).until(EC.presence_of_element_located((By.CLASS_NAME, 'video-avatar__avatar')))
+        hidden_bar = WebDriverWait(driver, admit_wait).until(EC.presence_of_element_located((By.CLASS_NAME, 'video-avatar__avatar')))
         driver.execute_script('document.getElementById("wc-footer").className = "footer";')
         WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="wc-footer"]/div/div[2]/div[1]/button'))).click()
     except Exception:
@@ -173,4 +175,4 @@ def master(meeting_link: str, password: str):
 
 
     # saving to cloud mongo db
-    save_to_db(duration_dict, name_keeper_dict, participants_dict, participants_data, URL)
+    save_to_db(duration_dict, name_keeper_dict, participants_dict, participants_data, meeting_link)
