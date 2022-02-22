@@ -119,6 +119,6 @@ def save_to_db(duration_dict: dict, name_keeper_dict: dict, participant_id_name_
         convert_file.write(json.dumps(call_summary, indent=4))
     cluster = os.environ.get('CLUSTER')
     client = MongoClient(cluster)
-    db = client.zoomdb
-    db.zoom_collection.insert_one(call_summary)
+    db = client.meeting_database
+    db.meeting_collection.insert_one(call_summary)
     print('successfully inserted data in db')
