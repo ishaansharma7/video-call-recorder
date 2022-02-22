@@ -40,7 +40,7 @@ def master(meeting_link: str):
         "profile.default_content_setting_values.media_stream_mic": 1,
         "profile.default_content_setting_values.media_stream_camera": 1,
     })
-
+    opt.add_argument('--disable-blink-features=AutomationControlled')
 
     # chrome driver
     service = Service(driver_path)
