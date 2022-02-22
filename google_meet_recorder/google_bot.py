@@ -22,8 +22,11 @@ def master(meeting_link: str):
     dotenv_path = join(dirname(__file__), '.env')
     load_dotenv(dotenv_path)
 
-    retry_login = int(os.environ.get('RETRY'))     # number of retries in case of login failure
-    record = os.environ.get('RECORD') == '1'       # enable/disable recording feature
+    retry_login = int(os.environ.get('RETRY'))          # number of retries in case of login failure
+    record = os.environ.get('RECORD') == '1'            # enable/disable recording feature
+    wait_sec = int(os.environ.get('WAIT_SEC'))          # general waiting time for html components to load
+    admit_wait = int(os.environ.get('ADMIT_WAIT'))      # waiting time for admit
+    hear_window = float(os.environ.get('HEAR_WINDOW'))  # window span for listening
 
 
     # check if OBS is running
@@ -56,11 +59,11 @@ def master(meeting_link: str):
 
         # google login
         try:
-            WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.XPATH, '//*[@id="identifierId"]'))).send_keys(os.environ.get('EMAIL'))
-            WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.XPATH, '//*[@id="identifierNext"]/div/button'))).click()
+            WebDriverWait(driver, wait_sec).until(EC.presence_of_element_located((By.XPATH, '//*[@id="identifierId"]'))).send_keys(os.environ.get('EMAIL'))
+            WebDriverWait(driver, wait_sec).until(EC.presence_of_element_located((By.XPATH, '//*[@id="identifierNext"]/div/button'))).click()
             time.sleep(3)
-            WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.XPATH, '//*[@id="password"]/div[1]/div/div[1]/input'))).send_keys(os.environ.get('PASSWORD'))
-            WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.XPATH, '//*[@id="passwordNext"]/div/button'))).click()
+            WebDriverWait(driver, wait_sec).until(EC.presence_of_element_located((By.XPATH, '//*[@id="password"]/div[1]/div/div[1]/input'))).send_keys(os.environ.get('PASSWORD'))
+            WebDriverWait(driver, wait_sec).until(EC.presence_of_element_located((By.XPATH, '//*[@id="passwordNext"]/div/button'))).click()
         except Exception:
             fault_capture('unable to login using gmail id', URL)
             if retry_login: email_login_process(retry_login-1)
@@ -74,8 +77,8 @@ def master(meeting_link: str):
         # wait for google meet to load properly
         try:
             time.sleep(1)
-            WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.XPATH, '//*[@id="yDmH0d"]/c-wiz/div/div/div[9]/div[3]/div/div/div[3]/div/div/div[1]/div[1]/div/div[4]/div[2]/div/div'))).click()
-            WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/c-wiz/div/div/div[9]/div[3]/div/div/div[3]/div/div/div[2]/div/div[2]/div/div[1]/div[1]'))).click()
+            WebDriverWait(driver, wait_sec).until(EC.presence_of_element_located((By.XPATH, '//*[@id="yDmH0d"]/c-wiz/div/div/div[9]/div[3]/div/div/div[3]/div/div/div[1]/div[1]/div/div[4]/div[2]/div/div'))).click()
+            WebDriverWait(driver, wait_sec).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/c-wiz/div/div/div[9]/div[3]/div/div/div[3]/div/div/div[2]/div/div[2]/div/div[1]/div[1]'))).click()
         except Exception:
             fault_capture('unable to join meeting', URL)
             if retry_login: meeting_login_process(retry_login-1)
@@ -88,7 +91,7 @@ def master(meeting_link: str):
 
     # open participants list
     try:
-        WebDriverWait(driver, 200).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ow3"]/div[1]/div/div[9]/div[3]/div[10]/div[3]/div[3]/div/div/div[2]/span/button'))).click()
+        WebDriverWait(driver, admit_wait).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ow3"]/div[1]/div/div[9]/div[3]/div[10]/div[3]/div[3]/div/div/div[2]/span/button'))).click()
     except Exception:
         fault_capture('unable to enter meeting and open participants list', URL)
         exit()
@@ -130,7 +133,7 @@ def master(meeting_link: str):
                 return
             last_name = participant_id_name_dict[participant_id]
             speaking_operations(participant_id_name_dict[participant_id], speaking, call_start_timestamp, participants_data)
-            if speaking: time.sleep(.2)
+            if speaking: time.sleep(hear_window)
 
 
     # add new paricipants and start thier subprocess
