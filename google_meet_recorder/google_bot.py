@@ -174,7 +174,3 @@ def master(meeting_link: str):
 
     # saving to cloud mongo db
     save_to_db(duration_dict, name_keeper_dict, participant_id_name_dict, participants_data, URL)
-
-
-if __name__ == '__main__':
-    master()
