@@ -8,7 +8,7 @@ Install and setup obs screen recorder, add F4 key in hotkeys to start/stop recor
 Used chrome version 97.
 
 ## Run Project
-In main.py file execute the function `start_recording(meeting_link, password)`, provide password in case of zoom call.
+In meeting_recorder.py file execute the function `start_recording(meeting_link, password)`, provide password in case of zoom call.
 
 ### Note
 If you want to disable recording functionality make `RECORD=0` in env file, or else make sure obs is running in background else you will be promted to run obs. Obs is required in order to enter meeting.
