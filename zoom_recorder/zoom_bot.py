@@ -38,7 +38,7 @@ def master(meeting_link: str, password: str):
 
     # camera and mic permissions
     opt = Options()
-    opt.headless = True
+    # opt.headless = True
     opt.add_experimental_option("prefs", {
         # "profile.default_content_setting_values.media_stream_mic": 1,
         # "profile.default_content_setting_values.media_stream_camera": 1,
@@ -63,6 +63,7 @@ def master(meeting_link: str, password: str):
             WebDriverWait(driver, wait_sec).until(EC.element_to_be_clickable((By.ID, "inputpasscode"))).send_keys(password)
             driver.find_element(by=By.ID, value='joinBtn').click()
         except Exception:
+            driver.save_screenshot('ss2.png')
             fault_capture('error ocurred while loging into zoom', URL)
             if retry_login: login_process(retry_login-1)
 

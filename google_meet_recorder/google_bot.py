@@ -36,7 +36,7 @@ def master(meeting_link: str):
 
     # camera and mic permissions
     opt = Options()
-    opt.headless = True
+    # opt.headless = True
     opt.add_experimental_option("prefs", {
         "profile.default_content_setting_values.media_stream_mic": 1,
         "profile.default_content_setting_values.media_stream_camera": 1,
@@ -67,6 +67,7 @@ def master(meeting_link: str):
             WebDriverWait(driver, wait_sec).until(EC.presence_of_element_located((By.XPATH, '//*[@id="passwordNext"]/div/button'))).click()
         except Exception:
             fault_capture('unable to login using gmail id', URL)
+            driver.save_screenshot('ss.png')
             if retry_login: email_login_process(retry_login-1)
 
 
@@ -82,6 +83,7 @@ def master(meeting_link: str):
             WebDriverWait(driver, wait_sec).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/c-wiz/div/div/div[9]/div[3]/div/div/div[3]/div/div/div[2]/div/div[2]/div/div[1]/div[1]'))).click()
         except Exception:
             fault_capture('unable to join meeting', URL)
+            driver.save_screenshot('ss.png')
             if retry_login: meeting_login_process(retry_login-1)
 
 
