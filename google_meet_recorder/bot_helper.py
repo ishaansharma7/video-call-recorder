@@ -129,4 +129,4 @@ def save_to_db(duration_dict: dict, name_keeper_dict: dict, participant_id_name_
         db.meeting_collection.insert_one(call_summary)
         print('successfully inserted data in db')
     except Exception:
-        print('error in storing data locally')
+        print('error in storing data on cloud')
