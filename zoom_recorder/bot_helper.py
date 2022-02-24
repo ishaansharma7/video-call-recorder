@@ -60,7 +60,8 @@ def fault_capture(msg: str, URL: str):
 #     time.sleep(.05)
 #     keyboard.release(Key.f4)
 
-# def toggle_recording(action:str):
+def toggle_recording(action:str):
+    pass
 #     keyboard = Controller()
 #     keyboard.press(Key.f4)
 #     time.sleep(.05)
