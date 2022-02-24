@@ -1,4 +1,4 @@
-from pynput.keyboard import Key, Controller
+# from pynput.keyboard import Key, Controller
 import psutil
 import os
 from selenium.webdriver.common.by import By
@@ -48,25 +48,25 @@ def fault_capture(msg: str, URL: str):
 
 
 # start/stop screen recording
-def start_stop_recording(action: str):
-    keyboard = Controller()
-    keyboard.press(Key.f4)
-    time.sleep(.05)
-    keyboard.release(Key.f4)
+# def start_stop_recording(action: str):
+#     keyboard = Controller()
+#     keyboard.press(Key.f4)
+#     time.sleep(.05)
+#     keyboard.release(Key.f4)
 
-def toggle_recording(action:str):
-    keyboard = Controller()
-    keyboard.press(Key.f4)
-    time.sleep(.05)
-    keyboard.release(Key.f4)
-    time.sleep(1)
-    num_of_processes = find_process_id_by_name('obs')
-    if action == 'start' and num_of_processes <= 1:
-        print('unable to start recording, trying again')
-        toggle_recording('start')
-    if action == 'stop' and num_of_processes > 1:
-        print('unable to stop recording, trying again')
-        toggle_recording('stop')
+# def toggle_recording(action:str):
+#     keyboard = Controller()
+#     keyboard.press(Key.f4)
+#     time.sleep(.05)
+#     keyboard.release(Key.f4)
+#     time.sleep(1)
+#     num_of_processes = find_process_id_by_name('obs')
+#     if action == 'start' and num_of_processes <= 1:
+#         print('unable to start recording, trying again')
+#         toggle_recording('start')
+#     if action == 'stop' and num_of_processes > 1:
+#         print('unable to stop recording, trying again')
+#         toggle_recording('stop')
 
 
 # count the number of time a name is used
