@@ -37,6 +37,7 @@ def master(meeting_link: str):
     # camera and mic permissions
     opt = Options()
     opt.headless = True
+    opt.add_argument('--no-sandbox')
     opt.add_experimental_option("prefs", {
         "profile.default_content_setting_values.media_stream_mic": 1,
         "profile.default_content_setting_values.media_stream_camera": 1,
