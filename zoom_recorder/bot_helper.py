@@ -126,11 +126,17 @@ def save_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: d
         'participants name': list(participants_dict.keys()),
         'participants data': participants_data
         }
-    with open('recent_zoom_call.txt', 'a') as convert_file:
-        convert_file.write('\n\n\n')
-        convert_file.write(json.dumps(call_summary, indent=4))
-    cluster = os.environ.get('CLUSTER')
-    client = MongoClient(cluster)
-    db = client.meeting_database
-    db.meeting_collection.insert_one(call_summary)
-    print('successfully inserted data in db')
+    try:
+        with open('recent_zoom_call.txt', 'a') as convert_file:
+            convert_file.write('\n\n\n')
+            convert_file.write(json.dumps(call_summary, indent=4))
+    except Exception:
+        print('error in storing data locally')
+    try:
+        cluster = os.environ.get('CLUSTER')
+        client = MongoClient(cluster)
+        db = client.meeting_database
+        db.meeting_collection.insert_one(call_summary)
+        print('successfully inserted data in db')
+    except Exception:
+        print('error in storing data on cloud')

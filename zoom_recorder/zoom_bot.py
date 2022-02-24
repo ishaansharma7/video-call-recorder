@@ -57,7 +57,7 @@ def master(meeting_link: str, password: str):
 
         # login code
         try:
-            WebDriverWait(driver, wait_sec).until(EC.presence_of_element_located((By.XPATH, '//*[@id="inputname"]'))).send_keys('Zoom Bot')
+            WebDriverWait(driver, wait_sec).until(EC.presence_of_element_located((By.XPATH, '//*[@id="inputname"]'))).send_keys(os.environ.get('BOT_NAME'))
             WebDriverWait(driver, wait_sec).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="joinBtn"]'))).click()
             WebDriverWait(driver, wait_sec).until(EC.element_to_be_clickable((By.ID, "inputpasscode"))).send_keys(password)
             driver.find_element(by=By.ID, value='joinBtn').click()
