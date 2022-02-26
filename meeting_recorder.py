@@ -12,4 +12,4 @@ def start_recording(meeting_link: str, password=''):
 
 
 if __name__ == '__main__':
-    start_recording('https://meet.google.com/ewj-mxmo-yib', 'je34Bw')
+    start_recording('https://us04web.zoom.us/j/79554205417?pwd=7oL2k8EBeE6lVyMuVmKEUgBcDTG0kN.1', '4J72U1')

@@ -3,7 +3,7 @@ import time
 from selenium.webdriver.common.by import By
 from pymongo import MongoClient
 import psutil
-#from pynput.keyboard import Key, Controller
+from pynput.keyboard import Key, Controller
 import json
 
 
@@ -42,15 +42,21 @@ def fault_capture(msg: str, URL: str):
         'joining link': URL,
         'time': time.ctime()
     }
-    with open('recent_call_error.txt', 'a') as convert_file:
-        convert_file.write('\n\n\n')
-        convert_file.write(json.dumps(error_dict, indent=4))
-    cluster = os.environ.get('CLUSTER')
-    client = MongoClient(cluster)
-    db = client.zoomdb
-    db.zoom_collection.insert_one(error_dict)
     print('error occured')
-    print('successfully inserted error data in db')
+    try:
+        with open('recent_call_error.txt', 'a') as convert_file:
+            convert_file.write('\n\n\n')
+            convert_file.write(json.dumps(error_dict, indent=4))
+    except Exception:
+        print('unable to store error data locally')
+    try:
+        cluster = os.environ.get('CLUSTER')
+        client = MongoClient(cluster)
+        db = client.meeting_database
+        db.meeting_collection.insert_one(error_dict)
+        print('successfully inserted error data in cloud db')
+    except Exception:
+        print('unable to store error data on cloud db')
 
 
 # start/stop screen recording
