@@ -17,10 +17,10 @@ import json
 def master(meeting_link: str):
 
     # paths
-    main_path = os.getcwd()
-    driver_path = os.path.join(main_path, 'chromedriver')
     dotenv_path = join(dirname(__file__), '.env')
     load_dotenv(dotenv_path)
+    main_path = os.getcwd()
+    driver_path = os.path.join(main_path, os.environ.get('DRIVER'))
 
     retry_login = int(os.environ.get('RETRY'))          # number of retries in case of login failure
     record = os.environ.get('RECORD') == '1'            # enable/disable recording feature
@@ -36,8 +36,8 @@ def master(meeting_link: str):
 
     # camera and mic permissions
     opt = Options()
-    opt.headless = True
-    opt.add_argument('--no-sandbox')
+    # opt.headless = True
+    # opt.add_argument('--no-sandbox')
     opt.add_experimental_option("prefs", {
         "profile.default_content_setting_values.media_stream_mic": 1,
         "profile.default_content_setting_values.media_stream_camera": 1,
