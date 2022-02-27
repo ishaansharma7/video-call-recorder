@@ -16,10 +16,10 @@ from time import time, ctime
 def master(meeting_link: str, password: str):
 
     # paths
-    main_path = os.getcwd()
-    driver_path = os.path.join(main_path, 'chromedriver')
     dotenv_path = join(dirname(__file__), '.env')
     load_dotenv(dotenv_path)
+    main_path = os.getcwd()
+    driver_path = os.path.join(main_path, os.environ.get('DRIVER'))
 
     retry_login = int(os.environ.get('RETRY'))          # number of retries in case of login failure
     record = os.environ.get('RECORD') == '1'            # enable/disable recording feature
@@ -48,8 +48,7 @@ def master(meeting_link: str, password: str):
     # chrome driver
     service = Service(driver_path)
     driver = webdriver.Chrome(service=service, options=opt)
-    # driver.maximize_window()
-    driver.set_window_size(1366, 768)
+    driver.maximize_window()
 
 
     def login_process(retry_login: int):
