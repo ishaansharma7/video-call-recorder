@@ -174,8 +174,11 @@ def master(meeting_link: str):
 
     # terminal output
     print(duration_dict)
+    print()
     print(name_keeper_dict)
+    print()
     print(participant_id_name_dict)
+    print()
     print(participants_data)
 
 
