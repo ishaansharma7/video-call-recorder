@@ -173,10 +173,10 @@ def master(meeting_link: str):
 
 
     # terminal output
-    print(duration_dict, indent=4)
-    print(name_keeper_dict, indent=4)
-    print(participant_id_name_dict, indent=4)
-    print(participants_data, indent=4)
+    print(duration_dict)
+    print(name_keeper_dict)
+    print(participant_id_name_dict)
+    print(participants_data)
 
 
     # saving to cloud mongo db
