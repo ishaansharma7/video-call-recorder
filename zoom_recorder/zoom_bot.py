@@ -14,7 +14,7 @@ from time import time, ctime
 
 
 def master(meeting_link: str, password: str):
-
+    print('started')
     # paths
     dotenv_path = join(dirname(__file__), '.env')
     load_dotenv(dotenv_path)
@@ -38,10 +38,11 @@ def master(meeting_link: str, password: str):
 
     # camera and mic permissions
     opt = Options()
-    # opt.headless = True
+    opt.headless = True
+    opt.add_argument('--no-sandbox')
     opt.add_experimental_option("prefs", {
         # "profile.default_content_setting_values.media_stream_mic": 1,
-        # "profile.default_content_setting_values.media_stream_camera": 1,
+        "profile.default_content_setting_values.media_stream_camera": 1,
     })
 
 
@@ -55,6 +56,7 @@ def master(meeting_link: str, password: str):
 
         if not retry_login: exit()
         driver.get(f'https://us04web.zoom.us/wc/join/{URL}?')
+        print('trying to login')
 
         # login code
         try:
@@ -63,12 +65,13 @@ def master(meeting_link: str, password: str):
             WebDriverWait(driver, wait_sec).until(EC.element_to_be_clickable((By.ID, "inputpasscode"))).send_keys(password)
             driver.find_element(by=By.ID, value='joinBtn').click()
         except Exception:
+            print('error in logging')
             driver.save_screenshot('ss2.png')
             fault_capture('error ocurred while loging into zoom', URL)
             if retry_login: login_process(retry_login-1)
 
     login_process(retry_login)
-
+    print('succesfully loged in')
 
     # after entering call within 200 seconds, enable footer and open participants list
     try:
@@ -76,6 +79,7 @@ def master(meeting_link: str, password: str):
         driver.execute_script('document.getElementById("wc-footer").className = "footer";')
         WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="wc-footer"]/div/div[2]/div[1]/button'))).click()
     except Exception:
+        print('error occured, not able to open participants list in time')
         fault_capture('error occured, not able to open participants list in time', URL)
         exit()
 
@@ -98,7 +102,7 @@ def master(meeting_link: str, password: str):
     # check for call over, exit all operations
     def call_ended():
         try: # when you are removed by host
-            title = driver.find_element(By.XPATH, '/html/body/div[12]/div/div/div/div[1]/div[1]')
+            title = driver.find_element(By.XPATH, '/html/body/div[13]/div/div/div/div[1]/div[1]')
             if title.text == 'You have been removed' or title.text == 'This meeting has been ended by host':
                 return True
         except Exception:
