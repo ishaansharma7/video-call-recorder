@@ -49,7 +49,7 @@ def master(meeting_link: str, password: str):
     # chrome driver
     service = Service(driver_path)
     driver = webdriver.Chrome(service=service, options=opt)
-    driver.maximize_window()
+    driver.set_window_size(1366, 768)
 
 
     def login_process(retry_login: int):

@@ -47,7 +47,8 @@ def master(meeting_link: str):
     # chrome driver
     service = Service(driver_path)
     driver = webdriver.Chrome(service=service, options=opt)
-    driver.maximize_window()
+    # driver.maximize_window()
+    driver.set_window_size(1366, 768)
 
 
     # meeting link
