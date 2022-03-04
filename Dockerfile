@@ -23,7 +23,7 @@ RUN apt install -y python3-pip
 
 RUN pip install selenium==4.1.0 python-dotenv==0.19.2 pymongo==4.0.1 dnspython==2.2.0 psutil==5.9.0
 
-RUN apt-get -y install pulseaudio-utils lame mpg123
+# RUN apt-get -y install pulseaudio-utils lame mpg123
 
 WORKDIR /video-call-recorder
 
@@ -31,6 +31,8 @@ COPY . .
 
 # RUN pip install -r requirements.txt
 
-ENV DISPLAY=:1
+# ENV DISPLAY=:1
 
 CMD ["python3", "meeting_recorder.py"]
+# CMD ["parec", "-d", "alsa_output.pci-0000_00_1f.3.analog-stereo.monitor", "|", "lame", "-r", "-V0", "-", "out.mp3"]
+# CMD "parec -d alsa_output.pci-0000_00_1f.3.analog-stereo.monitor | lame -r -V0 - out.mp3"

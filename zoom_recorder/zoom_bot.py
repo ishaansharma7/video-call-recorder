@@ -40,9 +40,12 @@ def master(meeting_link: str, password: str):
     opt = Options()
     opt.headless = True
     opt.add_argument('--no-sandbox')
+    opt.add_argument('--disable-dev-shm-usage')
+    opt.add_argument('--disable-gpu')
+    opt.add_argument('--window-size=1920,1080')
     opt.add_experimental_option("prefs", {
         # "profile.default_content_setting_values.media_stream_mic": 1,
-        "profile.default_content_setting_values.media_stream_camera": 1,
+        # "profile.default_content_setting_values.media_stream_camera": 1,
     })
 
 
@@ -50,6 +53,7 @@ def master(meeting_link: str, password: str):
     service = Service(driver_path)
     driver = webdriver.Chrome(service=service, options=opt)
     driver.set_window_size(1366, 768)
+    # driver.maximize_window()
 
 
     def login_process(retry_login: int):
@@ -64,9 +68,10 @@ def master(meeting_link: str, password: str):
             WebDriverWait(driver, wait_sec).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="joinBtn"]'))).click()
             WebDriverWait(driver, wait_sec).until(EC.element_to_be_clickable((By.ID, "inputpasscode"))).send_keys(password)
             driver.find_element(by=By.ID, value='joinBtn').click()
+            # driver.save_screenshot('ss1.png')
         except Exception:
             print('error in logging')
-            driver.save_screenshot('ss2.png')
+            # driver.save_screenshot('ss2.png')
             fault_capture('error ocurred while loging into zoom', URL)
             if retry_login: login_process(retry_login-1)
 
@@ -78,6 +83,7 @@ def master(meeting_link: str, password: str):
         hidden_bar = WebDriverWait(driver, admit_wait).until(EC.presence_of_element_located((By.CLASS_NAME, 'video-avatar__avatar')))
         driver.execute_script('document.getElementById("wc-footer").className = "footer";')
         WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="wc-footer"]/div/div[2]/div[1]/button'))).click()
+        # driver.save_screenshot('ss3.png')
     except Exception:
         print('error occured, not able to open participants list in time')
         fault_capture('error occured, not able to open participants list in time', URL)
