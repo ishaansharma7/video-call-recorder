@@ -24,7 +24,9 @@ RUN apt install -y python3-pip
 RUN pip install selenium==4.1.0 python-dotenv==0.19.2 pymongo==4.0.1 dnspython==2.2.0 psutil==5.9.0
 
 RUN apt-get install -y alsa-base alsa-utils
-
+RUN apt-get install -y pulseaudio
+RUN apt install -y ffmpeg
+RUN apt-get install lame
 
 
 WORKDIR /video-call-recorder

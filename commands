@@ -1,0 +1,5 @@
+rm -rf /var/run/pulse /var/lib/pulse /root/.config/pulse
+
+pulseaudio -D --verbose --exit-idle-time=-1 --disallow-exit
+
+parec -d 0 | lame -r -V0 - out.mp3
