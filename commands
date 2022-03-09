@@ -9,3 +9,5 @@ docker run -it -v storage:/storage container_name
 docker volume ls
 
 docker volume inspect storage
+
+sudo docker run -it -e MEETING_LINK="https://us04web.zoom.us/j/79580696078?pwd=wZNVSfwqDLmGy-bb6EDVuyYbxOrMgh.1" -e PASSWORD=ty13sH -v storage:/storage zoom_container

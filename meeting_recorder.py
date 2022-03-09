@@ -1,6 +1,6 @@
 from zoom_recorder import zoom_bot
 from google_meet_recorder import google_bot
-
+import sys
 
 def start_recording(meeting_link: str, password=''):
     if 'google' in meeting_link:
@@ -12,4 +12,4 @@ def start_recording(meeting_link: str, password=''):
 
 
 if __name__ == '__main__':
-    start_recording('https://us04web.zoom.us/j/78248778631?pwd=0wZ3AMRxFp70YhiWO-bjEPYJ5OfvFu.1', 'ZQ2TE2')
+    start_recording(str(sys.argv[1]), str(sys.argv[2]))

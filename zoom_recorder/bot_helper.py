@@ -34,7 +34,7 @@ def find_process_id_by_name(process_name):
 
 
 # error/exception during login or entery
-def fault_capture(msg: str, URL: str):
+def fault_capture(msg: str, URL: str, volume:str):
     error_dict = {
         'message': msg,
         'event': 'error',
@@ -44,7 +44,7 @@ def fault_capture(msg: str, URL: str):
     }
     print('error occured')
     try:
-        with open('recent_call_error.txt', 'a') as convert_file:
+        with open(volume+'recent_call_error.txt', 'a') as convert_file:
             convert_file.write('\n\n\n')
             convert_file.write(json.dumps(error_dict, indent=4))
     except Exception:
@@ -124,7 +124,7 @@ def speaking_operations(person_name: str, speaking: bool, call_start_timestamp: 
 
 
 # insert data to cloud db
-def save_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: dict, participants_data: dict, URL: str):
+def save_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: dict, participants_data: dict, URL: str, volume: str):
     call_summary = {
         'call duration': duration_dict,
         'type': 'zoom call',
@@ -134,7 +134,7 @@ def save_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: d
         'participants data': participants_data
         }
     try:
-        with open('recent_zoom_call.txt', 'a') as convert_file:
+        with open(volume+'recent_zoom_call.txt', 'a') as convert_file:
             convert_file.write('\n\n\n')
             convert_file.write(json.dumps(call_summary, indent=4))
     except Exception:

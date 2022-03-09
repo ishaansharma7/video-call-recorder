@@ -27,6 +27,7 @@ def master(meeting_link: str, password: str):
     wait_sec = int(os.environ.get('WAIT_SEC'))              # general waiting time for html components to load
     admit_wait = int(os.environ.get('ADMIT_WAIT'))          # waiting time for admit
     audio_cmd = os.environ.get('SUBPROCESS_CMD')
+    volume = os.environ.get('VOLUME')
 
 
     # meeting link
@@ -72,7 +73,7 @@ def master(meeting_link: str, password: str):
         except Exception:
             print('error in logging')
             driver.save_screenshot('ss2.png')
-            fault_capture('error ocurred while loging into zoom', URL)
+            fault_capture('error ocurred while loging into zoom', URL, volume)
             if retry_login: login_process(retry_login-1)
 
     login_process(retry_login)
@@ -86,7 +87,7 @@ def master(meeting_link: str, password: str):
         driver.save_screenshot('ss3.png')
     except Exception:
         print('error occured, not able to open participants list in time')
-        fault_capture('error occured, not able to open participants list in time', URL)
+        fault_capture('error occured, not able to open participants list in time', URL, volume)
         exit()
 
 
@@ -97,7 +98,7 @@ def master(meeting_link: str, password: str):
     # starting time
     call_start_timestamp = time()
     call_start_time = ctime(call_start_timestamp)
-    audio_name = str(call_start_time).replace(' ', '_') + '.mp3'
+    audio_name = volume + str(call_start_time).replace(' ', '_') + '.mp3'
 
 
     # starting audio recorder
@@ -196,4 +197,4 @@ def master(meeting_link: str, password: str):
 
 
     # saving to cloud mongo db
-    save_to_db(duration_dict, name_keeper_dict, participants_dict, participants_data, meeting_link)
+    save_to_db(duration_dict, name_keeper_dict, participants_dict, participants_data, meeting_link, volume)
