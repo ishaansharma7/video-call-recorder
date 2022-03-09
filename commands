@@ -3,3 +3,9 @@ rm -rf /var/run/pulse /var/lib/pulse /root/.config/pulse
 pulseaudio -D --verbose --exit-idle-time=-1 --disallow-exit
 
 parec -d 0 | lame -r -V0 - out.mp3
+
+docker run -it -v storage:/storage container_name
+
+docker volume ls
+
+docker volume inspect storage
