@@ -33,8 +33,6 @@ WORKDIR /video-call-recorder
 
 COPY . .
 
+RUN chmod +x entrypoint.sh
 
-
-# CMD ["python3", "meeting_recorder.py"]
-# CMD ["parec", "-d", "alsa_output.pci-0000_00_1f.3.analog-stereo.monitor", "|", "lame", "-r", "-V0", "-", "out.mp3"]
-# CMD "parec -d alsa_output.pci-0000_00_1f.3.analog-stereo.monitor | lame -r -V0 - out.mp3"
+CMD ["/video-call-recorder/entrypoint.sh"]

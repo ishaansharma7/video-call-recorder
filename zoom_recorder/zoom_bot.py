@@ -1,4 +1,4 @@
-import os
+import os, signal, subprocess
 from os.path import join, dirname
 from dotenv import load_dotenv
 import threading
@@ -21,10 +21,11 @@ def master(meeting_link: str, password: str):
     main_path = os.getcwd()
     driver_path = os.path.join(main_path, os.environ.get('DRIVER'))
 
-    retry_login = int(os.environ.get('RETRY'))          # number of retries in case of login failure
-    record = os.environ.get('RECORD') == '1'            # enable/disable recording feature
-    wait_sec = int(os.environ.get('WAIT_SEC'))          # general waiting time for html components to load
-    admit_wait = int(os.environ.get('ADMIT_WAIT'))      # waiting time for admit
+    retry_login = int(os.environ.get('RETRY'))              # number of retries in case of login failure
+    record_video = os.environ.get('RECORD_VIDEO') == '1'    # enable/disable recording feature
+    record_audio = os.environ.get('RECORD_AUDIO') == '1'    # enable/disable recording feature
+    wait_sec = int(os.environ.get('WAIT_SEC'))              # general waiting time for html components to load
+    admit_wait = int(os.environ.get('ADMIT_WAIT'))          # waiting time for admit
 
 
     # meeting link
@@ -32,8 +33,8 @@ def master(meeting_link: str, password: str):
 
 
     # check if OBS is running
-    if record: find_process_id_by_name('obs')
-    if record: print('OBS found')
+    if record_video: find_process_id_by_name('obs')
+    if record_video: print('OBS found')
 
 
     # camera and mic permissions
@@ -89,11 +90,15 @@ def master(meeting_link: str, password: str):
 
 
     # starting screen recorder
-    if record: toggle_recording('start')
+    if record_video: toggle_recording('start')
+    
+    
+    # starting audio recorder
+    if record_audio: p = subprocess.Popen("exec " + os.environ.get('SUBPROCESS_CMD'), stdout=subprocess.PIPE, shell=True)
 
 
     # starting time
-    call_start_timestamp = time()-1
+    call_start_timestamp = time()
     call_start_time = ctime(call_start_timestamp)
 
 
@@ -161,12 +166,16 @@ def master(meeting_link: str, password: str):
             except Exception:
                 print('* exception in update_participants for loop *')
                 continue
-
+    
     update_participants()
 
 
     # ending screen recorder
-    if record: toggle_recording('stop')
+    if record_video: toggle_recording('stop')
+  
+  
+    # ending audio recorder
+    if record_audio: os.kill(p.pid+1, signal.SIGTERM)
 
 
     # call end time
