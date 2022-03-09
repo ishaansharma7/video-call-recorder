@@ -97,10 +97,10 @@ def master(meeting_link: str, password: str):
     # starting time
     call_start_timestamp = time()
     call_start_time = ctime(call_start_timestamp)
-
+    audio_name = str(call_start_time).replace(' ', '_') + '.mp3'
 
     # starting audio recorder
-    if record_audio: p = subprocess.Popen('exec ' + audio_cmd + str(call_start_time) + '.mp3', stdout=subprocess.PIPE, shell=True)
+    if record_audio: p = subprocess.Popen('exec ' + audio_cmd + audio_name, stdout=subprocess.PIPE, shell=True)
 
 
     # variables
