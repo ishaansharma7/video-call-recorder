@@ -26,6 +26,7 @@ def master(meeting_link: str, password: str):
     record_audio = os.environ.get('RECORD_AUDIO') == '1'    # enable/disable recording feature
     wait_sec = int(os.environ.get('WAIT_SEC'))              # general waiting time for html components to load
     admit_wait = int(os.environ.get('ADMIT_WAIT'))          # waiting time for admit
+    audio_cmd = os.environ.get('SUBPROCESS_CMD')
 
 
     # meeting link
@@ -92,14 +93,14 @@ def master(meeting_link: str, password: str):
     # starting screen recorder
     if record_video: toggle_recording('start')
     
-    
-    # starting audio recorder
-    if record_audio: p = subprocess.Popen("exec " + os.environ.get('SUBPROCESS_CMD'), stdout=subprocess.PIPE, shell=True)
-
 
     # starting time
     call_start_timestamp = time()
     call_start_time = ctime(call_start_timestamp)
+
+
+    # starting audio recorder
+    if record_audio: p = subprocess.Popen('exec ' + audio_cmd + str(call_start_time) + '.mp3', stdout=subprocess.PIPE, shell=True)
 
 
     # variables
