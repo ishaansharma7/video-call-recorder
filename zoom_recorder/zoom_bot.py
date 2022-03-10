@@ -26,8 +26,8 @@ def master(meeting_link: str, password: str):
     record_audio = os.environ.get('RECORD_AUDIO') == '1'    # enable/disable recording feature
     wait_sec = int(os.environ.get('WAIT_SEC'))              # general waiting time for html components to load
     admit_wait = int(os.environ.get('ADMIT_WAIT'))          # waiting time for admit
-    audio_cmd = os.environ.get('SUBPROCESS_CMD')
-    volume = os.environ.get('VOLUME')
+    audio_cmd = os.environ.get('SUBPROCESS_CMD')            # subrocess command for audio recording
+    volume = os.environ.get('VOLUME')                       # perssistent volume path
 
 
     # meeting link
