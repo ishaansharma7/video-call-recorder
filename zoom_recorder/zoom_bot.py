@@ -15,6 +15,7 @@ from time import time, ctime
 
 def master(meeting_link: str, password: str):
     print('started')
+
     # paths
     dotenv_path = join(dirname(__file__), '.env')
     load_dotenv(dotenv_path)
