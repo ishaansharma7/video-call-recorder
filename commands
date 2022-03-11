@@ -12,4 +12,4 @@ docker volume inspect storage
 
 sudo docker run -it -e MEETING_LINK="https://us04web.zoom.us/j/79370649852?pwd=_gCSKstAdYDhtn9eonDAdmjaIrT2wz.1" -e PASSWORD=kW7LQM -v storage:/storage zoom_container
 
-sudo docker run -it -e MEETING_LINK="https://us04web.zoom.us/j/74608050263?pwd=_Qv8j_EPhKD89n2uC_ONnTDVy-G7Y7.1" -e PASSWORD=hHQz14 -v storage:/storage zoom_container
+sudo docker run -it -e MEETING_LINK="https://us04web.zoom.us/j/71843833806?pwd=q4hHN4hvP4QKxYAe4Awk6OsMvuTIke.1" -e PASSWORD=HcA8TL -v storage:/storage zoom_container

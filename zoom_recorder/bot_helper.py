@@ -114,7 +114,7 @@ def mic_status(driver: object, participant_id: str):
 
 
 # create the data for each participant
-def speaking_operations(person_name: str, speaking: bool, call_start_timestamp: float, participants_data: dict, left=False, left_meeting={}):
+def speaking_operations(person_name: str, speaking: bool, call_start_timestamp: float, participants_data: dict):
     if person_name not in participants_data:
         participants_data[person_name] = [{'speaking':speaking, 'current_time': time.time()-call_start_timestamp}]
         return
@@ -122,8 +122,6 @@ def speaking_operations(person_name: str, speaking: bool, call_start_timestamp: 
         return
     else:
         participants_data[person_name].append({'speaking':speaking, 'current_time': time.time()-call_start_timestamp})
-    if left:
-        left_meeting[person_name] = time.time()-call_start_timestamp
 
 
 # insert data to cloud db

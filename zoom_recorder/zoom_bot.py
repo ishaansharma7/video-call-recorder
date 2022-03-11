@@ -147,10 +147,15 @@ def master(meeting_link: str, password: str):
         last_name = ''
         while True:
             if call_ended(): return
-            person_name, speaking = mic_status(driver, participant_id)
+            try:
+                person_name, speaking = mic_status(driver, participant_id)
+            except Exception:
+                left_meeting[last_name] = time()-call_start_timestamp
             if person_name == 'destroy subprocess':
                 # make speaking = false, left = True, store info in left_meeting
-                speaking_operations(last_name, False, call_start_timestamp, participants_data, True, left_meeting)
+                print('destroy subprocess')
+                left_meeting[last_name] = time()-call_start_timestamp
+                speaking_operations(last_name, False, call_start_timestamp, participants_data)
                 return
             # DO YOUR OPERATIONS HERE FOR EACH PARTICIPANT (USE speaking BOOLEAN)
             last_name = person_name
