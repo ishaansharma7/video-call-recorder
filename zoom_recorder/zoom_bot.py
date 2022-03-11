@@ -9,8 +9,10 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
-from zoom_recorder.bot_helper import login_details, name_modifier, mic_status, save_to_db, speaking_operations, find_process_id_by_name, fault_capture, toggle_recording
+from zoom_recorder.bot_helper import login_details, name_modifier, mic_status, save_to_db, speaking_operations, find_process_id_by_name, fault_capture, toggle_recording, register_meeting_in_db, update_to_db
+import time as sleep_time
 from time import time, ctime
+
 
 
 def master(meeting_link: str, password: str):
@@ -105,11 +107,21 @@ def master(meeting_link: str, password: str):
     # starting audio recorder
     if record_audio: p = subprocess.Popen('exec ' + audio_cmd + audio_name, stdout=subprocess.PIPE, shell=True)
 
+    MID = register_meeting_in_db(call_start_time, URL)
 
     # variables
     name_keeper_dict = dict()       # keeps the count of same names
     participants_dict = dict()      # keeps the track of each participants
     participants_data = dict()      # speaking data of each participants
+    meeting_running = True
+
+
+    def regular_update_db():
+        while meeting_running:
+            update_to_db({'start time': call_start_time, 'end time': call_end_time}, name_keeper_dict,
+            participants_dict, participants_data, URL, MID)
+            sleep_time.sleep(10)
+        return
 
 
     # check for call over, exit all operations
@@ -125,6 +137,7 @@ def master(meeting_link: str, password: str):
         except NoSuchElementException:
             return True
         return False
+
 
 
     # subprocess for each particiant
@@ -171,8 +184,9 @@ def master(meeting_link: str, password: str):
                 print('* exception in update_participants for loop *')
                 continue
     
+    threading.Thread(target=regular_update_db, daemon=True).start()
     update_participants()
-
+    meeting_running = False
 
     # ending screen recorder
     if record_video: toggle_recording('stop')

@@ -2,6 +2,7 @@ import os
 import time
 from selenium.webdriver.common.by import By
 from pymongo import MongoClient
+from bson import ObjectId
 import psutil
 # from pynput.keyboard import Key, Controller
 import json
@@ -147,3 +148,38 @@ def save_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: d
         print('successfully inserted data in db')
     except Exception:
         print('error in storing data on cloud')
+
+def register_meeting_in_db(call_start_time: str, URL: str):
+    call_summary = {
+        'call duration': call_start_time,
+        'type': 'zoom call',
+        'joining link': URL
+        }
+    try:
+        cluster = os.environ.get('CLUSTER')
+        client = MongoClient(cluster)
+        db = client.meeting_database
+        doc = db.meeting_collection.insert_one()
+        print('successfully inserted data in db')
+        return doc.inserted_id
+    except Exception:
+        print('error in storing data on cloud')
+        return
+
+def update_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: dict, participants_data: dict, URL: str, MID: str):
+    call_summary = {
+        'call duration': duration_dict,
+        'type': 'zoom call',
+        'joining link': URL,
+        'name count': name_keeper_dict,
+        'participants name': list(participants_dict.keys()),
+        'participants data': participants_data
+        }
+    try:
+        cluster = os.environ.get('CLUSTER')
+        client = MongoClient(cluster)
+        db = client.meeting_database
+        db.meeting_collection.replace_one({'_id':ObjectId(MID)}, call_summary)
+        print('successfully updated data in db')
+    except Exception:
+        print('error in updating data on cloud')
