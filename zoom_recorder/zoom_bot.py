@@ -118,7 +118,7 @@ def master(meeting_link: str, password: str):
 
     def regular_update_db():
         while meeting_running:
-            update_to_db({'start time': call_start_time, 'end time': call_end_time}, name_keeper_dict,
+            update_to_db({'start time': call_start_time, 'current time': ctime(), 'status':'ongoing'}, name_keeper_dict,
             participants_dict, participants_data, URL, MID)
             sleep_time.sleep(10)
         return
@@ -198,7 +198,7 @@ def master(meeting_link: str, password: str):
 
     # call end time
     call_end_time = ctime()
-    duration_dict = {'start time': call_start_time, 'end time': call_end_time}
+    duration_dict = {'start time': call_start_time, 'end time': call_end_time, 'status':'ended'}
 
 
     # terminal output
