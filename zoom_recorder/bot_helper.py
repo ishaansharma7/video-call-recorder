@@ -53,7 +53,7 @@ def fault_capture(msg: str, URL: str, volume:str):
     try:
         cluster = os.environ.get('CLUSTER')
         client = MongoClient(cluster)
-        db = client.meeting_database
+        db = client['meetingLiveStreaming']
         db.meeting_collection.insert_one(error_dict)
         print('successfully inserted error data in cloud db')
     except Exception:
@@ -114,7 +114,7 @@ def mic_status(driver: object, participant_id: str):
 
 
 # create the data for each participant
-def speaking_operations(person_name: str, speaking: bool, call_start_timestamp: float, participants_data: dict):
+def speaking_operations(person_name: str, speaking: bool, call_start_timestamp: float, participants_data: dict, left=False, left_meeting={}):
     if person_name not in participants_data:
         participants_data[person_name] = [{'speaking':speaking, 'current_time': time.time()-call_start_timestamp}]
         return
@@ -122,17 +122,20 @@ def speaking_operations(person_name: str, speaking: bool, call_start_timestamp: 
         return
     else:
         participants_data[person_name].append({'speaking':speaking, 'current_time': time.time()-call_start_timestamp})
+    if left:
+        left_meeting[person_name] = time.time()-call_start_timestamp
 
 
 # insert data to cloud db
-def save_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: dict, participants_data: dict, URL: str, volume: str):
+def save_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: dict, participants_data: dict, URL: str, volume: str, left_meeting: dict):
     call_summary = {
         'call duration': duration_dict,
         'type': 'zoom call',
-        'joining link': URL,
-        'name count': name_keeper_dict,
-        'participants name': list(participants_dict.keys()),
-        'participants data': participants_data
+        'joining_link': URL,
+        'name_count': name_keeper_dict,
+        'participants_name': list(participants_dict.keys()),
+        'participants_left': left_meeting,
+        'participants_data': participants_data
         }
     try:
         with open(volume+'recent_zoom_call.txt', 'a') as convert_file:
@@ -143,23 +146,23 @@ def save_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: d
     try:
         cluster = os.environ.get('CLUSTER')
         client = MongoClient(cluster)
-        db = client.meeting_database
+        db = client['meetingLiveStreaming']
         db.meeting_collection.insert_one(call_summary)
         print('successfully inserted data in db')
     except Exception:
-        print('error in storing data on cloud')
+        print('error in storing data on db')
 
 # register in db at start of meeting
 def register_meeting_in_db(call_start_time: str, URL: str):
     call_summary = {
         'call duration': call_start_time,
         'type': 'zoom call',
-        'joining link': URL
+        'joining_link': URL
         }
     try:
         cluster = os.environ.get('CLUSTER')
         client = MongoClient(cluster)
-        db = client.meeting_database
+        db = client['meetingLiveStreaming']
         doc = db.meeting_collection.insert_one(call_summary)
         print('successfully registered meeting in db')
         return doc.inserted_id
@@ -168,20 +171,21 @@ def register_meeting_in_db(call_start_time: str, URL: str):
         return
 
 # continiously update data in db
-def update_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: dict, participants_data: dict, URL: str, MID: str):
+def update_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: dict, participants_data: dict, URL: str, left_meeting: dict, MID: str):
     call_summary = {
         'call duration': duration_dict,
         'type': 'zoom call',
-        'joining link': URL,
-        'name count': name_keeper_dict,
-        'participants name': list(participants_dict.keys()),
-        'participants data': participants_data
+        'joining_link': URL,
+        'name_count': name_keeper_dict,
+        'participants_name': list(participants_dict.keys()),
+        'participants_left': left_meeting,
+        'participants_data': participants_data
         }
     try:
         cluster = os.environ.get('CLUSTER')
         client = MongoClient(cluster)
-        db = client.meeting_database
+        db = client['meetingLiveStreaming']
         db.meeting_collection.replace_one({'_id':ObjectId(MID)}, call_summary)
         print('successfully updated data in db')
     except Exception:
-        print('error in updating data on cloud')
+        print('error in updating data on db')

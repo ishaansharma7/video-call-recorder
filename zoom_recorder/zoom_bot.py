@@ -77,7 +77,7 @@ def master(meeting_link: str, password: str):
         except Exception:
             print('error in logging')
             driver.save_screenshot('ss2.png')
-            fault_capture('error ocurred while loging into zoom', URL, volume)
+            fault_capture('error ocurred while loging into zoom', meeting_link, volume)
             if retry_login: login_process(retry_login-1)
 
     login_process(retry_login)
@@ -91,7 +91,7 @@ def master(meeting_link: str, password: str):
         driver.save_screenshot('ss3.png')
     except Exception:
         print('error occured, not able to open participants list in time')
-        fault_capture('error occured, not able to open participants list in time', URL, volume)
+        fault_capture('error occured, not able to open participants list in time', meeting_link, volume)
         exit()
 
 
@@ -108,19 +108,20 @@ def master(meeting_link: str, password: str):
     # starting audio recorder
     if record_audio: p = subprocess.Popen('exec ' + audio_cmd + audio_name, stdout=subprocess.PIPE, shell=True)
 
-    MID = register_meeting_in_db(call_start_time, URL)
+    MID = register_meeting_in_db(call_start_time, meeting_link)
 
     # variables
     name_keeper_dict = dict()       # keeps the count of same names
     participants_dict = dict()      # keeps the track of each participants
     participants_data = dict()      # speaking data of each participants
+    left_meeting = dict()
     meeting_running = True
 
 
     def regular_update_db():
         while meeting_running:
             update_to_db({'start time': call_start_time, 'current time': ctime(), 'status':'ongoing'}, name_keeper_dict,
-            participants_dict, participants_data, URL, MID)
+            participants_dict, participants_data, meeting_link, left_meeting ,MID)
             sleep_time.sleep(update_interval)
         return
 
@@ -148,7 +149,8 @@ def master(meeting_link: str, password: str):
             if call_ended(): return
             person_name, speaking = mic_status(driver, participant_id)
             if person_name == 'destroy subprocess':
-                speaking_operations(last_name, False, call_start_timestamp, participants_data)
+                # make speaking = false, left = True, store info in left_meeting
+                speaking_operations(last_name, False, call_start_timestamp, participants_data, True, left_meeting)
                 return
             # DO YOUR OPERATIONS HERE FOR EACH PARTICIPANT (USE speaking BOOLEAN)
             last_name = person_name
@@ -189,6 +191,7 @@ def master(meeting_link: str, password: str):
     update_participants()
     meeting_running = False
 
+
     # ending screen recorder
     if record_video: toggle_recording('stop')
   
@@ -210,7 +213,9 @@ def master(meeting_link: str, password: str):
     print(list(participants_dict.keys()))
     print()
     print(participants_data)
+    print()
+    print(left_meeting)
 
 
     # saving to cloud mongo db
-    save_to_db(duration_dict, name_keeper_dict, participants_dict, participants_data, meeting_link, volume)
+    save_to_db(duration_dict, name_keeper_dict, participants_dict, participants_data, meeting_link, volume, left_meeting)
