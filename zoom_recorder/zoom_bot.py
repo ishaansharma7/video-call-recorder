@@ -24,13 +24,14 @@ def master(meeting_link: str, password: str):
     main_path = os.getcwd()
     driver_path = os.path.join(main_path, os.environ.get('DRIVER'))
 
-    retry_login = int(os.environ.get('RETRY'))              # number of retries in case of login failure
-    record_video = os.environ.get('RECORD_VIDEO') == '1'    # enable/disable recording feature
-    record_audio = os.environ.get('RECORD_AUDIO') == '1'    # enable/disable recording feature
-    wait_sec = int(os.environ.get('WAIT_SEC'))              # general waiting time for html components to load
-    admit_wait = int(os.environ.get('ADMIT_WAIT'))          # waiting time for admit
-    audio_cmd = os.environ.get('SUBPROCESS_CMD')            # subrocess command for audio recording
-    volume = os.environ.get('VOLUME')                       # perssistent volume path
+    retry_login = int(os.environ.get('RETRY'))                  # number of retries in case of login failure
+    record_video = os.environ.get('RECORD_VIDEO') == '1'        # enable/disable recording feature
+    record_audio = os.environ.get('RECORD_AUDIO') == '1'        # enable/disable recording feature
+    wait_sec = int(os.environ.get('WAIT_SEC'))                  # general waiting time for html components to load
+    admit_wait = int(os.environ.get('ADMIT_WAIT'))              # waiting time for admit
+    audio_cmd = os.environ.get('SUBPROCESS_CMD')                # subrocess command for audio recording
+    volume = os.environ.get('VOLUME')                           # perssistent volume path
+    update_interval = int(os.environ.get('UPDATE_INTERVAL'))    # number of retries in case of login failure
 
 
     # meeting link
@@ -120,7 +121,7 @@ def master(meeting_link: str, password: str):
         while meeting_running:
             update_to_db({'start time': call_start_time, 'current time': ctime(), 'status':'ongoing'}, name_keeper_dict,
             participants_dict, participants_data, URL, MID)
-            sleep_time.sleep(10)
+            sleep_time.sleep(update_interval)
         return
 
 

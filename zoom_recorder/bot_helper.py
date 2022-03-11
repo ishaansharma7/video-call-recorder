@@ -149,6 +149,7 @@ def save_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: d
     except Exception:
         print('error in storing data on cloud')
 
+# register in db at start of meeting
 def register_meeting_in_db(call_start_time: str, URL: str):
     call_summary = {
         'call duration': call_start_time,
@@ -159,13 +160,14 @@ def register_meeting_in_db(call_start_time: str, URL: str):
         cluster = os.environ.get('CLUSTER')
         client = MongoClient(cluster)
         db = client.meeting_database
-        doc = db.meeting_collection.insert_one()
-        print('successfully inserted data in db')
+        doc = db.meeting_collection.insert_one(call_summary)
+        print('successfully registered meeting in db')
         return doc.inserted_id
     except Exception:
-        print('error in storing data on cloud')
+        print('error in registering meeting in db')
         return
 
+# continiously update data in db
 def update_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: dict, participants_data: dict, URL: str, MID: str):
     call_summary = {
         'call duration': duration_dict,
