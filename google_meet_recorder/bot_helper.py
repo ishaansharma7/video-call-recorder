@@ -36,7 +36,7 @@ def fault_capture(msg: str, URL: str):
         'joining link': URL,
         'time': time.ctime()
     }
-    print('error occured')
+    print('error occured', msg)
     try:
         with open('recent_call_error.txt', 'a') as convert_file:
             convert_file.write('\n\n\n')

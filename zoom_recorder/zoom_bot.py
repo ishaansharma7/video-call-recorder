@@ -1,4 +1,5 @@
 import os, signal, subprocess
+import random
 from os.path import join, dirname
 from dotenv import load_dotenv
 import threading
@@ -10,8 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from zoom_recorder.bot_helper import login_details, name_modifier, mic_status, save_to_db, speaking_operations, find_process_id_by_name, fault_capture, toggle_recording, register_meeting_in_db, update_to_db
-import time as sleep_time
-from time import time, ctime
+from time import time, ctime, sleep
 
 
 
@@ -102,7 +102,8 @@ def master(meeting_link: str, password: str):
     # starting time
     call_start_timestamp = time()
     call_start_time = ctime(call_start_timestamp)
-    audio_name = volume + str(call_start_time).replace(' ', '_') + '.mp3'
+    audio_id = '_' + str(number = random.randint(1000,9999))
+    audio_name = volume + str(call_start_time).replace(' ', '_') + audio_id + '.mp3'
 
 
     # starting audio recorder
@@ -115,14 +116,15 @@ def master(meeting_link: str, password: str):
     participants_dict = dict()      # keeps the track of each participants
     participants_data = dict()      # speaking data of each participants
     left_meeting = dict()
+    timeline = list()
     meeting_running = True
 
 
     def regular_update_db():
         while meeting_running:
-            update_to_db({'start time': call_start_time, 'current time': ctime(), 'status':'ongoing'}, name_keeper_dict,
-            participants_dict, participants_data, meeting_link, left_meeting ,MID)
-            sleep_time.sleep(update_interval)
+            update_to_db({'start_time': call_start_time, 'current_time': ctime(), 'status':'ongoing'}, name_keeper_dict,
+            participants_dict, participants_data, meeting_link, left_meeting ,MID, timeline, audio_name)
+            sleep(update_interval)
         return
 
 
@@ -155,11 +157,11 @@ def master(meeting_link: str, password: str):
                 # make speaking = false, left = True, store info in left_meeting
                 print('destroy subprocess')
                 left_meeting[last_name] = time()-call_start_timestamp
-                speaking_operations(last_name, False, call_start_timestamp, participants_data)
+                speaking_operations(last_name, False, call_start_timestamp, participants_data, timeline)
                 return
             # DO YOUR OPERATIONS HERE FOR EACH PARTICIPANT (USE speaking BOOLEAN)
             last_name = person_name
-            speaking_operations(person_name, speaking, call_start_timestamp, participants_data)
+            speaking_operations(person_name, speaking, call_start_timestamp, participants_data, timeline)
 
 
     # add new paricipants and start thier subprocess
@@ -207,7 +209,7 @@ def master(meeting_link: str, password: str):
 
     # call end time
     call_end_time = ctime()
-    duration_dict = {'start time': call_start_time, 'end time': call_end_time, 'status':'ended'}
+    duration_dict = {'start_time': call_start_time, 'end_time': call_end_time, 'status':'ended'}
 
 
     # terminal output
@@ -223,4 +225,4 @@ def master(meeting_link: str, password: str):
 
 
     # saving to cloud mongo db
-    save_to_db(duration_dict, name_keeper_dict, participants_dict, participants_data, meeting_link, volume, left_meeting)
+    save_to_db(duration_dict, name_keeper_dict, participants_dict, participants_data, meeting_link, volume, left_meeting, timeline, audio_name)

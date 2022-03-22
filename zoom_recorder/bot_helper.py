@@ -1,5 +1,6 @@
 import os
 import time
+from datetime import datetime
 from selenium.webdriver.common.by import By
 from pymongo import MongoClient
 from bson import ObjectId
@@ -39,7 +40,7 @@ def fault_capture(msg: str, URL: str, volume:str):
     error_dict = {
         'message': msg,
         'event': 'error',
-        'type': 'zoom call',
+        'type': 'zoom_call',
         'joining link': URL,
         'time': time.ctime()
     }
@@ -114,26 +115,33 @@ def mic_status(driver: object, participant_id: str):
 
 
 # create the data for each participant
-def speaking_operations(person_name: str, speaking: bool, call_start_timestamp: float, participants_data: dict):
+def speaking_operations(person_name: str, speaking: bool, call_start_timestamp: float, participants_data: dict, timeline: list):
     if person_name not in participants_data:
-        participants_data[person_name] = [{'speaking':speaking, 'current_time': time.time()-call_start_timestamp}]
+        c_time = time.time()-call_start_timestamp
+        participants_data[person_name] = [{'speaking':speaking, 'current_time': c_time}]
+        timeline.append([c_time, person_name, 'entered speaking' if speaking else ' entered silent'])
         return
     if participants_data[person_name][-1]['speaking'] == speaking:
         return
     else:
-        participants_data[person_name].append({'speaking':speaking, 'current_time': time.time()-call_start_timestamp})
+        c_time = time.time()-call_start_timestamp
+        participants_data[person_name] = [{'speaking':speaking, 'current_time': c_time}]
+        timeline.append([c_time, person_name, 'speaking' if speaking else 'silent'])
 
 
 # insert data to cloud db
-def save_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: dict, participants_data: dict, URL: str, volume: str, left_meeting: dict):
+def save_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: dict, participants_data: dict, URL: str, volume: str, left_meeting: dict, timeline: list, audio_name:str):
     call_summary = {
-        'call duration': duration_dict,
-        'type': 'zoom call',
+        'call_duration': duration_dict,
+        'call_date': datetime.utcnow(),
+        'type': 'zoom_call',
         'joining_link': URL,
         'name_count': name_keeper_dict,
         'participants_name': list(participants_dict.keys()),
         'participants_left': left_meeting,
-        'participants_data': participants_data
+        'participants_data': participants_data,
+        'timeline':timeline,
+        'audio_name':audio_name
         }
     try:
         with open(volume+'recent_zoom_call.txt', 'a') as convert_file:
@@ -153,8 +161,8 @@ def save_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: d
 # register in db at start of meeting
 def register_meeting_in_db(call_start_time: str, URL: str):
     call_summary = {
-        'call duration': call_start_time,
-        'type': 'zoom call',
+        'call_duration': call_start_time,
+        'type': 'zoom_call',
         'joining_link': URL
         }
     try:
@@ -169,15 +177,18 @@ def register_meeting_in_db(call_start_time: str, URL: str):
         return
 
 # continiously update data in db
-def update_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: dict, participants_data: dict, URL: str, left_meeting: dict, MID: str):
+def update_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: dict, participants_data: dict, URL: str, left_meeting: dict, MID: str, timeline: list, audio_name:str):
     call_summary = {
-        'call duration': duration_dict,
-        'type': 'zoom call',
+        'call_duration': duration_dict,
+        'call_date': datetime.utcnow(),
+        'type': 'zoom_call',
         'joining_link': URL,
         'name_count': name_keeper_dict,
         'participants_name': list(participants_dict.keys()),
         'participants_left': left_meeting,
-        'participants_data': participants_data
+        'participants_data': participants_data,
+        'timeline':timeline,
+        'audio_name':audio_name
         }
     try:
         cluster = os.environ.get('CLUSTER')
