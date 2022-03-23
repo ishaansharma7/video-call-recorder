@@ -31,7 +31,7 @@ def master(meeting_link: str, password: str, client_name='default_client'):
     admit_wait = int(os.environ.get('ADMIT_WAIT'))              # waiting time for admit
     audio_cmd = os.environ.get('SUBPROCESS_CMD')                # subrocess command for audio recording
     volume = os.environ.get('VOLUME')                           # perssistent volume path
-    update_interval = int(os.environ.get('UPDATE_INTERVAL'))    # number of retries in case of login failure
+    update_interval = int(os.environ.get('UPDATE_INTERVAL'))    # interval to update data in db
 
 
     # meeting link
@@ -102,7 +102,8 @@ def master(meeting_link: str, password: str, client_name='default_client'):
     # starting time
     call_start_timestamp = time()
     call_start_time = ctime(call_start_timestamp)
-    audio_name = meeting_id + str(call_start_time) + client_name + '.mp3'
+    # audio_name = client_name.replace(' ', '_') + '.mp3'
+    audio_name = meeting_id + '_' + str(call_start_time).replace(' ', '_') + '_' + client_name.replace(' ', '_') + '.mp3'
 
 
     # starting audio recorder
@@ -140,7 +141,6 @@ def master(meeting_link: str, password: str, client_name='default_client'):
         except NoSuchElementException:
             return True
         return False
-
 
 
     # subprocess for each particiant
