@@ -102,7 +102,6 @@ def master(meeting_link: str, password: str, client_name='default_client'):
     # starting time
     call_start_timestamp = time()
     call_start_time = ctime(call_start_timestamp)
-    # audio_name = client_name.replace(' ', '_') + '.mp3'
     audio_name = meeting_id + '_' + str(call_start_time).replace(' ', '_') + '_' + client_name.replace(' ', '_') + '.mp3'
 
 
