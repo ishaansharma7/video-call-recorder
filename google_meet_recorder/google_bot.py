@@ -70,8 +70,8 @@ def master(meeting_link: str):
             WebDriverWait(driver, wait_sec).until(EC.presence_of_element_located((By.XPATH, '//*[@id="passwordNext"]/div/button'))).click()
         except Exception:
             fault_capture('unable to login using gmail id', URL)
-            exit()
             driver.save_screenshot(volume+'ss.png')
+            exit()
             if retry_login: email_login_process(retry_login-1)
 
 

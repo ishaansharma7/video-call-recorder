@@ -15,7 +15,7 @@ from time import time, ctime, sleep
 
 
 
-def master(meeting_link: str, password: str):
+def master(meeting_link: str, password: str, client_name='default_client'):
     print('started')
 
     # paths
@@ -35,7 +35,7 @@ def master(meeting_link: str, password: str):
 
 
     # meeting link
-    URL = login_details(meeting_link)
+    meeting_id = login_details(meeting_link)
 
 
     # check if OBS is running
@@ -64,7 +64,7 @@ def master(meeting_link: str, password: str):
     def login_process(retry_login: int):
 
         if not retry_login: exit()
-        driver.get(f'https://us04web.zoom.us/wc/join/{URL}?')
+        driver.get(f'https://us04web.zoom.us/wc/join/{meeting_id}?')
         print('trying to login')
 
         # login code
@@ -102,14 +102,13 @@ def master(meeting_link: str, password: str):
     # starting time
     call_start_timestamp = time()
     call_start_time = ctime(call_start_timestamp)
-    audio_id = '_' + str(number = random.randint(1000,9999))
-    audio_name = volume + str(call_start_time).replace(' ', '_') + audio_id + '.mp3'
+    audio_name = meeting_id + str(call_start_time) + client_name + '.mp3'
 
 
     # starting audio recorder
-    if record_audio: p = subprocess.Popen('exec ' + audio_cmd + audio_name, stdout=subprocess.PIPE, shell=True)
+    if record_audio: p = subprocess.Popen('exec ' + audio_cmd + volume + audio_name, stdout=subprocess.PIPE, shell=True)
 
-    MID = register_meeting_in_db(call_start_time, meeting_link)
+    MID = register_meeting_in_db(call_start_time, meeting_link, meeting_id)
 
     # variables
     name_keeper_dict = dict()       # keeps the count of same names
@@ -123,7 +122,7 @@ def master(meeting_link: str, password: str):
     def regular_update_db():
         while meeting_running:
             update_to_db({'start_time': call_start_time, 'current_time': ctime(), 'status':'ongoing'}, name_keeper_dict,
-            participants_dict, participants_data, meeting_link, left_meeting ,MID, timeline, audio_name)
+            participants_dict, participants_data, meeting_link, left_meeting ,MID, timeline, audio_name, meeting_id)
             sleep(update_interval)
         return
 
@@ -131,7 +130,7 @@ def master(meeting_link: str, password: str):
     # check for call over, exit all operations
     def call_ended():
         try: # when you are removed by host
-            title = driver.find_element(By.XPATH, '/html/body/div[13]/div/div/div/div[1]/div[1]')
+            title = driver.find_element(By.XPATH, '/html/body/div[14]/div/div/div/div[1]/div[1]')
             if title.text == 'You have been removed' or title.text == 'This meeting has been ended by host':
                 return True
         except Exception:
@@ -225,4 +224,4 @@ def master(meeting_link: str, password: str):
 
 
     # saving to cloud mongo db
-    save_to_db(duration_dict, name_keeper_dict, participants_dict, participants_data, meeting_link, volume, left_meeting, timeline, audio_name)
+    save_to_db(duration_dict, name_keeper_dict, participants_dict, participants_data, meeting_link, volume, left_meeting, timeline, audio_name, meeting_id)

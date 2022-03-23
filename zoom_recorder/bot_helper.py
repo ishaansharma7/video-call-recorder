@@ -36,11 +36,12 @@ def find_process_id_by_name(process_name):
 
 
 # error/exception during login or entery
-def fault_capture(msg: str, URL: str, volume:str):
+def fault_capture(msg: str, URL: str, volume:str, meeting_id:str):
     error_dict = {
         'message': msg,
         'event': 'error',
         'type': 'zoom_call',
+        'meeting_id': meeting_id,
         'joining link': URL,
         'time': time.ctime()
     }
@@ -125,17 +126,18 @@ def speaking_operations(person_name: str, speaking: bool, call_start_timestamp: 
         return
     else:
         c_time = time.time()-call_start_timestamp
-        participants_data[person_name] = [{'speaking':speaking, 'current_time': c_time}]
+        participants_data[person_name].append({'speaking':speaking, 'current_time': c_time})
         timeline.append([c_time, person_name, 'speaking' if speaking else 'silent'])
 
 
 # insert data to cloud db
-def save_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: dict, participants_data: dict, URL: str, volume: str, left_meeting: dict, timeline: list, audio_name:str):
+def save_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: dict, participants_data: dict, URL: str, volume: str, left_meeting: dict, timeline: list, audio_name:str, meeting_id:str):
     call_summary = {
         'call_duration': duration_dict,
         'call_date': datetime.utcnow(),
         'type': 'zoom_call',
         'joining_link': URL,
+        'meeting_id': meeting_id,
         'name_count': name_keeper_dict,
         'participants_name': list(participants_dict.keys()),
         'participants_left': left_meeting,
@@ -159,10 +161,11 @@ def save_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: d
         print('error in storing data on db')
 
 # register in db at start of meeting
-def register_meeting_in_db(call_start_time: str, URL: str):
+def register_meeting_in_db(call_start_time: str, URL: str, meeting_id:str):
     call_summary = {
         'call_duration': call_start_time,
         'type': 'zoom_call',
+        'meeting_id': meeting_id,
         'joining_link': URL
         }
     try:
@@ -177,12 +180,13 @@ def register_meeting_in_db(call_start_time: str, URL: str):
         return
 
 # continiously update data in db
-def update_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: dict, participants_data: dict, URL: str, left_meeting: dict, MID: str, timeline: list, audio_name:str):
+def update_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: dict, participants_data: dict, URL: str, left_meeting: dict, MID: str, timeline: list, audio_name:str, meeting_id:str):
     call_summary = {
         'call_duration': duration_dict,
         'call_date': datetime.utcnow(),
         'type': 'zoom_call',
         'joining_link': URL,
+        'meeting_id': meeting_id,
         'name_count': name_keeper_dict,
         'participants_name': list(participants_dict.keys()),
         'participants_left': left_meeting,
