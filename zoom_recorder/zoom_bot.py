@@ -124,6 +124,9 @@ def master(meeting_link: str, password: str, client_name='default_client'):
             update_to_db({'start_time': call_start_time, 'current_time': ctime(), 'status':'ongoing'}, name_keeper_dict,
             participants_dict, participants_data, meeting_link, left_meeting ,MID, timeline, audio_name, meeting_id)
             sleep(update_interval)
+        print('final update to db')
+        update_to_db({'start_time': call_start_time, 'end_time': ctime(), 'status':'ended'}, name_keeper_dict,
+        participants_dict, participants_data, meeting_link, left_meeting ,MID, timeline, audio_name, meeting_id)
         return
 
 
@@ -192,7 +195,7 @@ def master(meeting_link: str, password: str, client_name='default_client'):
                 print('* exception in update_participants for loop *')
                 continue
     
-    threading.Thread(target=regular_update_db, daemon=True).start()
+    threading.Thread(target=regular_update_db).start()
     update_participants()
     meeting_running = False
 
@@ -223,4 +226,4 @@ def master(meeting_link: str, password: str, client_name='default_client'):
 
 
     # saving to cloud mongo db
-    save_to_db(duration_dict, name_keeper_dict, participants_dict, participants_data, meeting_link, volume, left_meeting, timeline, audio_name, meeting_id)
+    # save_to_db(duration_dict, name_keeper_dict, participants_dict, participants_data, meeting_link, volume, left_meeting, timeline, audio_name, meeting_id)
