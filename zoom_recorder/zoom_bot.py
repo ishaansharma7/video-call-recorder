@@ -10,7 +10,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
-from zoom_recorder.bot_helper import login_details, name_modifier, mic_status, save_to_db, speaking_operations, find_process_id_by_name, fault_capture, toggle_recording, register_meeting_in_db, update_to_db
+from zoom_recorder.bot_helper import login_details, name_modifier, mic_status, speaking_operations, find_process_id_by_name, fault_capture, toggle_recording, register_meeting_in_db, update_to_db
 from time import time, ctime, sleep
 
 
