@@ -131,42 +131,43 @@ def speaking_operations(person_name: str, speaking: bool, call_start_timestamp: 
 
 
 # insert data to cloud db
-def save_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: dict, participants_data: dict, URL: str, volume: str, left_meeting: dict, timeline: list, audio_name:str, meeting_id:str):
-    call_summary = {
-        'call_duration': duration_dict,
-        'call_date': datetime.utcnow(),
-        'type': 'zoom_call',
-        'joining_link': URL,
-        'meeting_id': meeting_id,
-        'name_count': name_keeper_dict,
-        'participants_name': list(participants_dict.keys()),
-        'participants_left': left_meeting,
-        'participants_data': participants_data,
-        'timeline':timeline,
-        'audio_name':audio_name
-        }
-    try:
-        with open(volume+'recent_zoom_call.txt', 'a') as convert_file:
-            convert_file.write('\n\n\n')
-            convert_file.write(json.dumps(call_summary, indent=4))
-    except Exception:
-        print('error in storing data locally')
-    try:
-        cluster = os.environ.get('CLUSTER')
-        client = MongoClient(cluster)
-        db = client['meetingLiveStreaming']
-        db.meeting_collection.insert_one(call_summary)
-        print('successfully inserted data in db')
-    except Exception:
-        print('error in storing data on db')
+# def save_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: dict, participants_data: dict, URL: str, volume: str, left_meeting: dict, timeline: list, audio_name:str, meeting_id:str):
+#     call_summary = {
+#         'call_duration': duration_dict,
+#         'call_date': datetime.utcnow(),
+#         'type': 'zoom_call',
+#         'joining_link': URL,
+#         'meeting_id': meeting_id,
+#         'name_count': name_keeper_dict,
+#         'participants_name': list(participants_dict.keys()),
+#         'participants_left': left_meeting,
+#         'participants_data': participants_data,
+#         'timeline':timeline,
+#         'audio_name':audio_name
+#         }
+#     try:
+#         with open(volume+'recent_zoom_call.txt', 'a') as convert_file:
+#             convert_file.write('\n\n\n')
+#             convert_file.write(json.dumps(call_summary, indent=4))
+#     except Exception:
+#         print('error in storing data locally')
+#     try:
+#         cluster = os.environ.get('CLUSTER')
+#         client = MongoClient(cluster)
+#         db = client['meetingLiveStreaming']
+#         db.meeting_collection.insert_one(call_summary)
+#         print('successfully inserted data in db')
+#     except Exception:
+#         print('error in storing data on db')
 
 # register in db at start of meeting
-def register_meeting_in_db(call_start_time: str, URL: str, meeting_id:str):
+def register_meeting_in_db(call_start_time: str, URL: str, meeting_id:str, client_name:str):
     call_summary = {
         'call_duration': call_start_time,
         'type': 'zoom_call',
         'meeting_id': meeting_id,
-        'joining_link': URL
+        'joining_link': URL,
+        'client_name': client_name,
         }
     try:
         cluster = os.environ.get('CLUSTER')
@@ -180,7 +181,7 @@ def register_meeting_in_db(call_start_time: str, URL: str, meeting_id:str):
         return
 
 # continiously update data in db
-def update_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: dict, participants_data: dict, URL: str, left_meeting: dict, MID: str, timeline: list, audio_name:str, meeting_id:str):
+def update_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict: dict, participants_data: dict, URL: str, left_meeting: dict, MID: str, timeline: list, audio_name:str, meeting_id:str, client_name:str):
     call_summary = {
         'call_duration': duration_dict,
         'call_date': datetime.utcnow(),
@@ -192,7 +193,8 @@ def update_to_db(duration_dict: dict, name_keeper_dict: dict, participants_dict:
         'participants_left': left_meeting,
         'participants_data': participants_data,
         'timeline':timeline,
-        'audio_name':audio_name
+        'audio_name':audio_name,
+        'client_name':client_name,
         }
     try:
         cluster = os.environ.get('CLUSTER')

@@ -108,7 +108,7 @@ def master(meeting_link: str, password: str, client_name='default_client'):
     # starting audio recorder
     if record_audio: p = subprocess.Popen('exec ' + audio_cmd + volume + audio_name, stdout=subprocess.PIPE, shell=True)
 
-    MID = register_meeting_in_db(call_start_time, meeting_link, meeting_id)
+    MID = register_meeting_in_db(call_start_time, meeting_link, meeting_id, client_name)
 
     # variables
     name_keeper_dict = dict()       # keeps the count of same names
@@ -122,11 +122,11 @@ def master(meeting_link: str, password: str, client_name='default_client'):
     def regular_update_db():
         while meeting_running:
             update_to_db({'start_time': call_start_time, 'current_time': ctime(), 'status':'ongoing'}, name_keeper_dict,
-            participants_dict, participants_data, meeting_link, left_meeting ,MID, timeline, audio_name, meeting_id)
+            participants_dict, participants_data, meeting_link, left_meeting ,MID, timeline, audio_name, meeting_id, client_name)
             sleep(update_interval)
         print('final update to db')
         update_to_db({'start_time': call_start_time, 'end_time': ctime(), 'status':'ended'}, name_keeper_dict,
-        participants_dict, participants_data, meeting_link, left_meeting ,MID, timeline, audio_name, meeting_id)
+        participants_dict, participants_data, meeting_link, left_meeting ,MID, timeline, audio_name, meeting_id, client_name)
         return
 
 
