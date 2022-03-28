@@ -7,7 +7,7 @@ from pymongo import MongoClient
 from bson import ObjectId
 import time
 import json
-
+from datetime import datetime
 
 # check if OBS is running
 def find_process_id_by_name(process_name):
@@ -144,9 +144,10 @@ def save_to_db(duration_dict: dict, name_keeper_dict: dict, participant_id_name_
         print('error in storing data on cloud')
 
 
-def update_to_db(duration_dict: dict, name_keeper_dict: dict, participant_id_name_dict: dict, participants_data: dict, URL: str, MID:str, timeline: list, left_meeting: dict):
+def update_to_db(duration_dict: dict, name_keeper_dict: dict, participant_id_name_dict: dict, participants_data: dict, URL: str, MID:str, timeline: list, left_meeting: dict, meeting_id: str, audio_name:str):
     call_summary = {
         'call_duration': duration_dict,
+        'call_date': datetime.utcnow(),
         'type': 'google_meet',
         'joining_link': URL,
         'name_count': name_keeper_dict,
@@ -154,6 +155,8 @@ def update_to_db(duration_dict: dict, name_keeper_dict: dict, participant_id_nam
         'participants_data': participants_data,
         'timeline': timeline,
         'left_meeting': left_meeting,
+        'meeting_id': meeting_id,
+        'audio_name': audio_name,
         }
     try:
         cluster = os.environ.get('CLUSTER')

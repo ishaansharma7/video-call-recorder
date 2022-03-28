@@ -1,5 +1,4 @@
 import os, signal, subprocess
-import random
 from os.path import join, dirname
 from dotenv import load_dotenv
 import threading

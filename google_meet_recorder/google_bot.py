@@ -1,4 +1,4 @@
-import os
+import os, signal
 from os.path import join, dirname
 from dotenv import load_dotenv
 import threading
@@ -11,10 +11,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import NoSuchElementException
 from google_meet_recorder.bot_helper import fault_capture, name_modifier, mic_status, speaking_operations, save_to_db, toggle_recording, find_process_id_by_name, update_to_db, register_meeting_in_db
-import json
+import subprocess
 
 
-def master(meeting_link: str):
+def master(meeting_link: str, client_name='default_client'):
 
     # paths
     dotenv_path = join(dirname(__file__), '.env')
@@ -27,9 +27,11 @@ def master(meeting_link: str):
     wait_sec = int(os.environ.get('WAIT_SEC'))          # general waiting time for html components to load
     admit_wait = int(os.environ.get('ADMIT_WAIT'))      # waiting time for admit
     hear_window = float(os.environ.get('HEAR_WINDOW'))  # window span for listening
+    record_audio = os.environ.get('RECORD_AUDIO') == '1'        # enable/disable recording feature
     volume = os.environ.get('VOLUME')
     update_interval = int(os.environ.get('UPDATE_INTERVAL'))    # interval to update data in db
     my_email = os.environ.get('EMAIL')
+    audio_cmd = os.environ.get('SUBPROCESS_CMD')                # subrocess command for audio recording
     password = os.environ.get('BOT_PASSWORD')
     print(my_email)
     print(password)
@@ -60,6 +62,7 @@ def master(meeting_link: str):
 
     # meeting link
     URL = meeting_link
+    meeting_id = meeting_link.split('.com/')[1][:13]
 
 
     def email_login_process(retry_login: int):
@@ -123,6 +126,8 @@ def master(meeting_link: str):
     # starting time
     call_start_timestamp = time.time()
     call_start_time = time.ctime(call_start_timestamp)
+    audio_name = meeting_id + '_' + str(call_start_time).replace(' ', '_') + '_' + client_name.replace(' ', '_') + '.mp3'
+    if record_audio: p = subprocess.Popen('exec ' + audio_cmd + volume + audio_name, stdout=subprocess.PIPE, shell=True)
 
     MID = register_meeting_in_db(call_start_time, meeting_link)
 
@@ -137,10 +142,10 @@ def master(meeting_link: str):
 
     def regular_update_db():
         while meeting_running:
-            update_to_db({'start_time': call_start_time, 'current_time': time.ctime(), 'status':'ongoing'}, name_keeper_dict, participant_id_name_dict, participants_data, meeting_link, MID, timeline, left_meeting)
+            update_to_db({'start_time': call_start_time, 'current_time': time.ctime(), 'status':'ongoing'}, name_keeper_dict, participant_id_name_dict, participants_data, meeting_link, MID, timeline, left_meeting, meeting_id, audio_name)
             time.sleep(update_interval)
         print('final update to db')
-        update_to_db({'start_time': call_start_time, 'end_time': time.ctime(), 'status':'ended'}, name_keeper_dict, participant_id_name_dict, participants_data, meeting_link, MID, timeline, left_meeting)
+        update_to_db({'start_time': call_start_time, 'end_time': time.ctime(), 'status':'ended'}, name_keeper_dict, participant_id_name_dict, participants_data, meeting_link, MID, timeline, left_meeting, meeting_id, audio_name)
         return
 
 
@@ -199,6 +204,7 @@ def master(meeting_link: str):
 
     # ending screen recorder
     if record: toggle_recording('stop')
+    if record_audio: os.kill(p.pid+1, signal.SIGTERM)
 
 
     # call end time
