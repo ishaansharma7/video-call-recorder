@@ -12,6 +12,6 @@ docker volume inspect storage
 
 sudo docker run -it -e MEETING_LINK="https://us04web.zoom.us/j/77207844043?pwd=lO37xBzr1FOGpS171ilzfKkHZ6rwDk.1" -e PASSWORD=R8Tmua -v call_audios:/storage zoom_container
 
-sudo docker run -it -e MEETING_LINK="https://us04web.zoom.us/j/78254993289?pwd=RqZ__jCLODO7HbBs_uD3se9cideGUC.1" -e PASSWORD=9Rr6fn -v call_audios:/storage zoom_container
+sudo docker run -it -e MEETING_LINK="https://us04web.zoom.us/j/78254993289?pwd=RqZ__jCLODO7HbBs_uD3se9cideGUC.1" -e PASSWORD=9Rr6fn -e CLIENT_NAME="Ishaan Sharma" -v call_audios:/storage zoom_container
 
-sudo docker run -it -e MEETING_LINK="https://us04web.zoom.us/j/73104299479?pwd=csXSRMQwyJjrz3i6FnxvTS7UzIO-rJ.1" -e PASSWORD=gYJ1g1 -e CLIENT_NAME="Ishaan Sharma" -v call_audios:/storage zoom_container
+sudo docker run -it -e MEETING_LINK="https://meet.google.com/hcd-pvyf-qvq" -e PASSWORD=gYJ1g1 -e CLIENT_NAME="Ishaan Sharma" -v call_audios:/storage zoom_container

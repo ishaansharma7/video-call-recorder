@@ -4,6 +4,7 @@ import os
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from pymongo import MongoClient
+from bson import ObjectId
 import time
 import json
 
@@ -103,14 +104,18 @@ def mic_status(driver: object, participant_id: str):
 
 
 # create the data for each participant
-def speaking_operations(person_name: str, speaking: bool, call_start_timestamp: float, participants_data: dict):
+def speaking_operations(person_name: str, speaking: bool, call_start_timestamp: float, participants_data: dict, timeline: list):
     if person_name not in participants_data:
-        participants_data[person_name] = [{'speaking':speaking, 'current_time': time.time()-call_start_timestamp}]
+        c_time = time.time()-call_start_timestamp
+        participants_data[person_name] = [{'speaking':speaking, 'current_time': c_time}]
+        timeline.append([c_time, person_name, 'entered speaking' if speaking else ' entered silent'])
         return
     if participants_data[person_name][-1]['speaking'] == speaking:
         return
     else:
-        participants_data[person_name].append({'speaking':speaking, 'current_time': time.time()-call_start_timestamp})
+        c_time = time.time()-call_start_timestamp
+        participants_data[person_name].append({'speaking':speaking, 'current_time': c_time})
+        timeline.append([c_time, person_name, 'speaking' if speaking else 'silent'])
 
 
 # insert data to cloud db
@@ -137,3 +142,41 @@ def save_to_db(duration_dict: dict, name_keeper_dict: dict, participant_id_name_
         print('successfully inserted data in cloud db')
     except Exception:
         print('error in storing data on cloud')
+
+
+def update_to_db(duration_dict: dict, name_keeper_dict: dict, participant_id_name_dict: dict, participants_data: dict, URL: str, MID:str, timeline: list, left_meeting: dict):
+    call_summary = {
+        'call_duration': duration_dict,
+        'type': 'google_meet',
+        'joining_link': URL,
+        'name_count': name_keeper_dict,
+        'participants_name': list(participant_id_name_dict.values()),
+        'participants_data': participants_data,
+        'timeline': timeline,
+        'left_meeting': left_meeting,
+        }
+    try:
+        cluster = os.environ.get('CLUSTER')
+        client = MongoClient(cluster)
+        db = client['meetingLiveStreaming']
+        db.meeting_collection.replace_one({'_id':ObjectId(MID)}, call_summary)
+        print('successfully updated data in db')
+    except Exception:
+        print('error in updating data on db')
+
+def register_meeting_in_db(call_start_time: str, URL: str):
+    call_summary = {
+        'call_duration': call_start_time,
+        'type': 'google_meet',
+        'joining_link': URL,
+        }
+    try:
+        cluster = os.environ.get('CLUSTER')
+        client = MongoClient(cluster)
+        db = client['meetingLiveStreaming']
+        doc = db.meeting_collection.insert_one(call_summary)
+        print('successfully registered meeting in db')
+        return doc.inserted_id
+    except Exception:
+        print('error in registering meeting in db')
+        return

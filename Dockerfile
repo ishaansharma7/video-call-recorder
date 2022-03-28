@@ -28,7 +28,8 @@ RUN apt-get install -y alsa-base alsa-utils
 RUN apt-get install -y pulseaudio
 RUN apt install -y ffmpeg
 RUN apt-get install lame
-
+RUN apt update
+RUN apt install -y firefox
 
 WORKDIR /video-call-recorder
 
