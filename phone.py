@@ -30,7 +30,7 @@ driver = webdriver.Firefox(service=service, options=opt)
 try:
     driver.get('https://accounts.google.com/ServiceLogin?')
     WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="identifierId"]'))).send_keys('meetingbotai@gmail.com')
-    # WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="identifierId"]'))).send_keys('pymeetbot@gmail.com')
+    # WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="identifierId"]'))).send_keys('gcp@ezeiatech.com')
     print('email entered')
     driver.save_screenshot('../storage/email.png')
     WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[@id="identifierNext"]/div/button'))).click()
