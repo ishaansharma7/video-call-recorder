@@ -37,6 +37,6 @@ WORKDIR /video-call-recorder
 
 COPY . .
 
-# RUN chmod +x entrypoint.sh
+RUN chmod +x entrypoint.sh
 
-# CMD ["/video-call-recorder/entrypoint.sh"]
+CMD ["/video-call-recorder/entrypoint.sh"]
