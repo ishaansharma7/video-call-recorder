@@ -31,7 +31,7 @@ RUN apt-get install lame
 RUN apt update
 RUN apt install -y firefox
 RUN apt update
-RUN apt install vim
+RUN apt install -y vim
 
 WORKDIR /video-call-recorder
 
