@@ -30,11 +30,13 @@ RUN apt install -y ffmpeg
 RUN apt-get install lame
 RUN apt update
 RUN apt install -y firefox
+RUN apt update
+RUN apt install vim
 
 WORKDIR /video-call-recorder
 
 COPY . .
 
-RUN chmod +x entrypoint.sh
+# RUN chmod +x entrypoint.sh
 
-CMD ["/video-call-recorder/entrypoint.sh"]
+# CMD ["/video-call-recorder/entrypoint.sh"]
