@@ -142,10 +142,10 @@ def master(meeting_link: str, client_name='default_client'):
 
     def regular_update_db():
         while meeting_running:
-            update_to_db({'start_time': call_start_time, 'current_time': time.ctime(), 'status':'ongoing'}, name_keeper_dict, participant_id_name_dict, participants_data, meeting_link, MID, timeline, left_meeting, meeting_id, audio_name)
+            update_to_db({'start_time': call_start_time, 'current_time': time.ctime(), 'status':'ongoing'}, name_keeper_dict, participant_id_name_dict, participants_data, meeting_link, MID, timeline, left_meeting, meeting_id, audio_name, client_name)
             time.sleep(update_interval)
         print('final update to db')
-        update_to_db({'start_time': call_start_time, 'end_time': time.ctime(), 'status':'ended'}, name_keeper_dict, participant_id_name_dict, participants_data, meeting_link, MID, timeline, left_meeting, meeting_id, audio_name)
+        update_to_db({'start_time': call_start_time, 'end_time': time.ctime(), 'status':'ended'}, name_keeper_dict, participant_id_name_dict, participants_data, meeting_link, MID, timeline, left_meeting, meeting_id, audio_name, client_name)
         return
 
 
