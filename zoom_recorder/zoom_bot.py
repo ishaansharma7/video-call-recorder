@@ -76,7 +76,7 @@ def master(meeting_link: str, password: str, client_name='default_client'):
         except Exception:
             print('error in logging')
             driver.save_screenshot('ss2.png')
-            fault_capture('error ocurred while loging into zoom', meeting_link, volume)
+            fault_capture('error ocurred while loging into zoom', meeting_link, volume, meeting_id)
             if retry_login: login_process(retry_login-1)
 
     login_process(retry_login)
@@ -90,7 +90,7 @@ def master(meeting_link: str, password: str, client_name='default_client'):
         driver.save_screenshot('ss3.png')
     except Exception:
         print('error occured, not able to open participants list in time')
-        fault_capture('error occured, not able to open participants list in time', meeting_link, volume)
+        fault_capture('error occured, not able to open participants list in time', meeting_link, volume, meeting_id)
         exit()
 
 

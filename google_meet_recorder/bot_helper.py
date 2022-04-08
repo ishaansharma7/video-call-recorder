@@ -154,7 +154,7 @@ def update_to_db(duration_dict: dict, name_keeper_dict: dict, participant_id_nam
         'participants_name': list(participant_id_name_dict.values()),
         'participants_data': participants_data,
         'timeline': timeline,
-        'left_meeting': left_meeting,
+        'participants_left': left_meeting,
         'meeting_id': meeting_id,
         'audio_name': audio_name,
         'client_name': client_name,
