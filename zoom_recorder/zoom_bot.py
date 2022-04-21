@@ -131,8 +131,8 @@ def master(meeting_link: str, password: str, client_name='default_client'):
 
     # check for call over, exit all operations
     def call_ended():
-        try: # when you are removed by host
-            title = driver.find_element(By.XPATH, '/html/body/div[14]/div/div/div/div[1]/div[1]')
+        try: # when you are removed by host     /html/body/div[12]/div/div/div/div[1]/div
+            title = driver.find_element(By.CLASS_NAME, 'zm-modal-body-title')
             if title.text == 'You have been removed' or title.text == 'This meeting has been ended by host':
                 return True
         except Exception:
